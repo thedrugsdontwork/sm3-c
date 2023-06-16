@@ -22,3 +22,13 @@ word* _xor(word *x,word *y){
     *(res+7)=(*(x+7)^*(y+7));
     return res;
 }
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+char* sm3(char*msg,int len);
+
+#if defined(__cplusplus)
+}
+#endif

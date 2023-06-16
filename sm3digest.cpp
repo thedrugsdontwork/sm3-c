@@ -19,8 +19,8 @@ word P_1(word x){
 FillMsg *fill(char *msg,long len){
     long realLen=len*8,fillLen,expLen;
     char *p,*q;
-    fillLen=(512-realLen-8-64)%512;
-    expLen=realLen+8+64+fillLen;
+    fillLen=448-(realLen%512+1);
+    expLen=realLen+64+fillLen+1;
     p=(char*) malloc(sizeof(char)*(expLen/8));
     memcpy(p,msg,len);
     q=p+len;
@@ -129,17 +129,8 @@ char* sm3(char*msg,int len){
     block=(word*) malloc(sizeof(word)*16);
     memcpy(iv_0,IV,sizeof(word)*8);
 
-    for(int i=0;i<groupCount-1;i++){
-        memcpy(block,(fm->msg+(i*16)),sizeof(word)*16);
-        for(int j=0;j<16;j++){
-            *(block+j)= exchange(*(block+j));
-        }
-        iv_1= compress(iv_0,block);
-        iv_0=iv_1;
-    }
-
-    if(groupCount==1){
-        memcpy(block,(fm->msg),sizeof(word)*16);
+    for(int i=0;i<groupCount;i++){
+        memcpy(block,(fm->msg+(i*(sizeof(word)*16))),sizeof(word)*16);
         for(int j=0;j<16;j++){
             *(block+j)= exchange(*(block+j));
         }
@@ -150,10 +141,10 @@ char* sm3(char*msg,int len){
 }
 
 int main() {
-    char *p="abc";
-//    6cca22ef9b226a28e6a34a03a9dbc478a2802dc0e3b0fe0d2c6465e167162570
+    char *p="abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd";
+    //debe9ff92275b8a138604889c18e5a4d6fdb70e5387e5765293dcba39c0c5732
     char *q;
-    q= sm3(p,3);
+    q= sm3(p,64);
     for(int i=0;i<64;i++){
         printf("%c", *(q+i));
 
