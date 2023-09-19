@@ -1,6 +1,6 @@
 #include <iostream>
 #include "sm3digest.h"
-
+#include <assert.h>
 
 word FF_j(word x,word y,word z,int j){
     return j<=15 && j>=0? x^y^z: (x&y)|(x&z)|(y&z);
@@ -17,7 +17,7 @@ word P_1(word x){
 }
 //step1:fill step2:compress
 FillMsg *fill(char *msg,long len){
-    long realLen=len*8,fillLen,expLen;
+    long long realLen=len*8,fillLen,expLen;
     char *p,*q;
     fillLen=448-(realLen%512+1);
     expLen=realLen+64+fillLen+1;
@@ -139,15 +139,20 @@ char* sm3(char*msg,int len){
     }
     return toHex(iv_1,8);
 }
-
-int main() {
+void test(){
     char *p="abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd";
-    //debe9ff92275b8a138604889c18e5a4d6fdb70e5387e5765293dcba39c0c5732
-    char *q;
+    std::string answer,targetAnswer="debe9ff92275b8a138604889c18e5a4d6fdb70e5387e5765293dcba39c0c5732";
+    answer=p;
+    const char *q;
     q= sm3(p,64);
     for(int i=0;i<64;i++){
         printf("%c", *(q+i));
 
     }
+    assert(!targetAnswer.compare(q));
+
+}
+int main() {
+    test();
     return 0;
 }
